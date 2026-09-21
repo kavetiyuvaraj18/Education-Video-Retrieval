@@ -1,0 +1,30 @@
+@'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Educational Video Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Educational Video Recommendation System</h1>
+
+    <form method="POST">
+        <input
+            type="text"
+            name="query"
+            placeholder="Enter a topic you want to learn"
+            required
+        >
+
+        <button type="submit">Search</button>
+    </form>
+
+    {% if query %}
+        <h2>You searched for:</h2>
+        <p>{{ query }}</p>
+    {% endif %}
+
+</body>
+</html>
+'@ | Set-Content .\templates\index.html
