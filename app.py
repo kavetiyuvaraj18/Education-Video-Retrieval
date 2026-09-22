@@ -48,6 +48,16 @@ def search_youtube_videos(query):
     return videos
 
 
+@app.route("/health", methods=["GET"])
+def health():
+
+    return jsonify({
+        "status": "running",
+        "youtube_api": "configured",
+        "recommendation_interface": "connected"
+    })
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
 
@@ -63,19 +73,20 @@ def home():
 
             try:
 
-                videos = search_youtube_videos(query)
+                candidate_videos = search_youtube_videos(query)
 
                 videos = get_recommendations(
                     query,
-                    videos
+                    candidate_videos,
+                    top_k=5
                 )
 
             except Exception as e:
 
-                print("YouTube API error:", e)
+                print("Application error:", e)
 
                 error = (
-                    "Unable to retrieve videos right now. "
+                    "Unable to retrieve recommendations right now. "
                     "Please try again."
                 )
 
@@ -108,24 +119,27 @@ def api_search():
 
     try:
 
-        videos = search_youtube_videos(query)
+        candidate_videos = search_youtube_videos(query)
 
         videos = get_recommendations(
             query,
-            videos
+            candidate_videos,
+            top_k=5
         )
 
         return jsonify({
             "query": query,
+            "candidate_count": len(candidate_videos),
+            "recommendation_count": len(videos),
             "videos": videos
         })
 
     except Exception as e:
 
-        print("YouTube API error:", e)
+        print("Application error:", e)
 
         return jsonify({
-            "error": "Unable to retrieve videos right now."
+            "error": "Unable to retrieve recommendations right now."
         }), 500
 
 

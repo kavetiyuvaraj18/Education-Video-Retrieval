@@ -1,13 +1,19 @@
-def get_recommendations(query, videos):
+def get_recommendations(query, videos, top_k=5):
     """
     Recommendation interface.
 
-    Member 1 sends:
-        query
-        candidate videos
+    Parameters:
+        query:
+            Student's learning query.
 
-    Member 2 will later replace this placeholder
-    with the actual recommendation system.
+        videos:
+            Candidate videos retrieved from YouTube.
+
+        top_k:
+            Number of final recommended videos.
+
+    Returns:
+        Top-K recommended videos.
     """
 
     recommendations = []
@@ -22,11 +28,15 @@ def get_recommendations(query, videos):
             "channel": video["channel"],
             "published_at": video["published_at"],
 
-            # These will be produced by Member 2.
+            # These values will later come from
+            # Member 2's recommendation model.
             "relevance_score": None,
             "timestamp": None
         }
 
         recommendations.append(recommendation)
 
-    return recommendations
+    # Temporary behavior:
+    # Until Member 2's model is connected,
+    # return the first top_k candidates.
+    return recommendations[:top_k]

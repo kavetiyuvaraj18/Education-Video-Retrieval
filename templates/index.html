@@ -15,6 +15,12 @@
         Find educational videos based on your learning topic
     </p>
 
+    <p class="system-description">
+        Enter a topic and the system will retrieve relevant educational
+        videos and rank them based on their relevance to your query.
+    </p>
+
+
     <div id="loading">
         Searching for educational videos...
     </div>
@@ -54,7 +60,7 @@
 
         <div class="results-header">
 
-            <h2>Recommended Educational Videos</h2>
+            <h2>Top Recommended Educational Videos</h2>
 
             <p class="result-info">
                 Results for:
@@ -62,7 +68,7 @@
             </p>
 
             <p class="candidate-count">
-                {{ videos|length }} candidate videos found
+                Showing {{ videos|length }} recommended videos
             </p>
 
         </div>
@@ -75,7 +81,7 @@
                 <div class="video-card">
 
                     <div class="recommendation-label">
-                        Candidate Video
+                        Recommendation {{ loop.index }}
                     </div>
 
 
