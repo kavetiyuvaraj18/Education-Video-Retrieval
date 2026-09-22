@@ -1,10 +1,10 @@
-@'
 <!DOCTYPE html>
 <html>
 <head>
     <title>Educational Video Recommendation System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
     <h1>Educational Video Recommendation System</h1>
@@ -21,10 +21,34 @@
     </form>
 
     {% if query %}
-        <h2>You searched for:</h2>
-        <p>{{ query }}</p>
+        <h2>Candidate Videos for: {{ query }}</h2>
+
+        {% for video in videos %}
+            <div class="video-card">
+
+                <img
+                    src="{{ video.thumbnail }}"
+                    width="320"
+                >
+
+                <h3>{{ video.title }}</h3>
+
+                <p><strong>Channel:</strong> {{ video.channel }}</p>
+
+                <p>{{ video.description }}</p>
+
+                <a
+                    href="https://www.youtube.com/watch?v={{ video.video_id }}"
+                    target="_blank"
+                >
+                    Watch Video
+                </a>
+
+            </div>
+
+            <hr>
+        {% endfor %}
     {% endif %}
 
 </body>
 </html>
-'@ | Set-Content .\templates\index.html
