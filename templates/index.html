@@ -19,12 +19,14 @@
         Searching for educational videos...
     </div>
 
+
     <form method="POST" onsubmit="showLoading()">
 
         <input
             type="text"
             name="query"
             placeholder="Enter a topic you want to learn"
+            value="{{ query }}"
             required
         >
 
@@ -35,13 +37,35 @@
     </form>
 
 
-    {% if query %}
+    {% if error %}
 
-        <h2>Recommended Educational Videos</h2>
+        <div class="error-message">
 
-        <p class="result-info">
-            Results for: <strong>{{ query }}</strong>
-        </p>
+            <strong>Error:</strong>
+
+            {{ error }}
+
+        </div>
+
+    {% endif %}
+
+
+    {% if query and not error %}
+
+        <div class="results-header">
+
+            <h2>Recommended Educational Videos</h2>
+
+            <p class="result-info">
+                Results for:
+                <strong>{{ query }}</strong>
+            </p>
+
+            <p class="candidate-count">
+                {{ videos|length }} candidate videos found
+            </p>
+
+        </div>
 
 
         {% if videos %}
@@ -54,9 +78,11 @@
                         Candidate Video
                     </div>
 
+
                     <h3>
                         {{ video.title }}
                     </h3>
+
 
                     <p>
                         <strong>Channel:</strong>
@@ -80,25 +106,84 @@
                     <div class="recommendation-info">
 
                         <p>
-                            <strong>Relevance Score:</strong>
-                            <span class="score">
-                                Awaiting recommendation model
-                            </span>
+
+                            <strong>
+                                Relevance Score:
+                            </strong>
+
+                            {% if video.relevance_score is not none %}
+
+                                <span class="score">
+
+                                    {{ "%.3f"|format(video.relevance_score) }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="score">
+
+                                    Awaiting recommendation model
+
+                                </span>
+
+                            {% endif %}
+
                         </p>
+
 
                         <p>
-                            <strong>Relevant Timestamp:</strong>
-                            <span class="timestamp">
-                                Awaiting recommendation model
-                            </span>
+
+                            <strong>
+                                Relevant Timestamp:
+                            </strong>
+
+                            {% if video.timestamp is not none %}
+
+                                <span
+                                    class="timestamp"
+                                    data-seconds="{{ video.timestamp }}">
+
+                                    {{ video.timestamp }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="timestamp">
+
+                                    Awaiting recommendation model
+
+                                </span>
+
+                            {% endif %}
+
                         </p>
 
-                        <button
-                            class="timestamp-button"
-                            type="button"
-                            disabled>
-                            ▶ Watch from Relevant Timestamp
-                        </button>
+
+                        {% if video.timestamp is not none %}
+
+                            <a
+                                class="timestamp-button"
+                                href="https://www.youtube.com/watch?v={{ video.video_id }}&t={{ video.timestamp }}s"
+                                target="_blank">
+
+                                ▶ Watch from Relevant Timestamp
+
+                            </a>
+
+                        {% else %}
+
+                            <button
+                                class="timestamp-button"
+                                type="button"
+                                disabled>
+
+                                ▶ Watch from Relevant Timestamp
+
+                            </button>
+
+                        {% endif %}
 
                     </div>
 
@@ -109,16 +194,18 @@
 
                 </div>
 
-                <hr>
-
             {% endfor %}
 
 
         {% else %}
 
-            <p>
-                No educational videos were found for this topic.
-            </p>
+            <div class="no-results">
+
+                <p>
+                    No educational videos were found for this topic.
+                </p>
+
+            </div>
 
         {% endif %}
 
@@ -132,6 +219,76 @@
             document.getElementById("loading").style.display = "block";
 
         }
+
+
+        function formatTimestamp(seconds) {
+
+            seconds = Number(seconds);
+
+            if (isNaN(seconds) || seconds < 0) {
+
+                return "Invalid timestamp";
+
+            }
+
+            seconds = Math.floor(seconds);
+
+            var hours = Math.floor(seconds / 3600);
+
+            var minutes = Math.floor(
+                (seconds % 3600) / 60
+            );
+
+            var remainingSeconds = seconds % 60;
+
+
+            if (hours > 0) {
+
+                return (
+                    hours +
+                    ":" +
+                    String(minutes).padStart(2, "0") +
+                    ":" +
+                    String(remainingSeconds).padStart(2, "0")
+                );
+
+            }
+
+
+            return (
+                minutes +
+                ":" +
+                String(remainingSeconds).padStart(2, "0")
+            );
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                var timestamps =
+                    document.querySelectorAll(
+                        ".timestamp[data-seconds]"
+                    );
+
+
+                timestamps.forEach(
+                    function (timestampElement) {
+
+                        var seconds =
+                            timestampElement.getAttribute(
+                                "data-seconds"
+                            );
+
+                        timestampElement.textContent =
+                            formatTimestamp(seconds);
+
+                    }
+                );
+
+            }
+        );
 
     </script>
 
