@@ -57,7 +57,8 @@ def api_search():
         part="snippet",
         q=query,
         type="video",
-        maxResults=20
+	order="relevance",
+	maxResults=20
     ).execute()
 
     videos = []

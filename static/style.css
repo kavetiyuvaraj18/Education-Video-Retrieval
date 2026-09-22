@@ -1,21 +1,69 @@
 body {
     font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    margin: 0;
+    padding: 40px;
     text-align: center;
-    margin-top: 100px;
 }
 
 h1 {
     font-size: 32px;
+    margin-bottom: 30px;
+}
+
+form {
+    margin-bottom: 30px;
 }
 
 input {
-    width: 400px;
-    padding: 12px;
+    width: 450px;
+    padding: 14px;
     font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
 button {
-    padding: 12px 25px;
+    padding: 14px 25px;
+    margin-left: 8px;
     font-size: 16px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+}
+
+.video-card {
+    width: 700px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.video-card img {
+    width: 320px;
+    border-radius: 8px;
+}
+
+.video-card h3 {
+    font-size: 20px;
+}
+
+.video-card p {
+    line-height: 1.5;
+}
+
+.video-card a {
+    text-decoration: none;
+    font-weight: bold;
+}
+.recommendation-label {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    background: #eeeeee;
 }
