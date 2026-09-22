@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Educational Video Recommendation System</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<script>
-function showLoading() {
-    document.getElementById("loading").style.display = "block";
-}
-</script>
+
 <body>
 
     <h1>Educational Video Recommendation System</h1>
-<div id="loading">
-    Searching for educational videos...
-</div>
+
+    <p class="subtitle">
+        Find educational videos based on your learning topic
+    </p>
+
+    <div id="loading">
+        Searching for educational videos...
+    </div>
+
     <form method="POST" onsubmit="showLoading()">
+
         <input
             type="text"
             name="query"
@@ -23,44 +28,113 @@ function showLoading() {
             required
         >
 
-        <button type="submit">Search</button>
+        <button type="submit">
+            Search
+        </button>
+
     </form>
 
+
     {% if query %}
+
         <h2>Recommended Educational Videos</h2>
 
-<p class="result-info">
-    Videos found for: <strong>{{ query }}</strong>
-</p>
+        <p class="result-info">
+            Results for: <strong>{{ query }}</strong>
+        </p>
 
-        {% for video in videos %}
-            <div class="recommendation-label">
-    Candidate Video
-</div>
 
-                <img
-                    src="{{ video.thumbnail }}"
-                    width="320"
-                >
+        {% if videos %}
 
-                <h3>{{ video.title }}</h3>
+            {% for video in videos %}
 
-                <p><strong>Channel:</strong> {{ video.channel }}</p>
+                <div class="video-card">
 
-                <p>{{ video.description }}</p>
+                    <div class="recommendation-label">
+                        Candidate Video
+                    </div>
 
-                <a
-                    href="https://www.youtube.com/watch?v={{ video.video_id }}"
-                    target="_blank"
-                >
-                    Watch Video
-                </a>
+                    <h3>
+                        {{ video.title }}
+                    </h3>
 
-            </div>
+                    <p>
+                        <strong>Channel:</strong>
+                        {{ video.channel }}
+                    </p>
 
-            <hr>
-        {% endfor %}
+
+                    <div class="video-player">
+
+                        <iframe
+                            src="https://www.youtube.com/embed/{{ video.video_id }}"
+                            title="{{ video.title }}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+
+                    </div>
+
+
+                    <div class="recommendation-info">
+
+                        <p>
+                            <strong>Relevance Score:</strong>
+                            <span class="score">
+                                Awaiting recommendation model
+                            </span>
+                        </p>
+
+                        <p>
+                            <strong>Relevant Timestamp:</strong>
+                            <span class="timestamp">
+                                Awaiting recommendation model
+                            </span>
+                        </p>
+
+                        <button
+                            class="timestamp-button"
+                            type="button"
+                            disabled>
+                            ▶ Watch from Relevant Timestamp
+                        </button>
+
+                    </div>
+
+
+                    <p>
+                        {{ video.description }}
+                    </p>
+
+                </div>
+
+                <hr>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <p>
+                No educational videos were found for this topic.
+            </p>
+
+        {% endif %}
+
     {% endif %}
 
+
+    <script>
+
+        function showLoading() {
+
+            document.getElementById("loading").style.display = "block";
+
+        }
+
+    </script>
+
 </body>
+
 </html>
