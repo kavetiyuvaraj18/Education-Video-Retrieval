@@ -3,9 +3,9 @@ class Recommender:
         self.embedder = embedder
         self.faiss_index = faiss_index
 
-    def recommend(self, query, top_k=5):
+    def recommend(self, query, chunks, top_k=5):
         """
-        Retrieve the most relevant transcript chunks for a query.
+        Retrieve the most relevant timestamped transcript chunks.
         """
 
         query_embedding = self.embedder.encode([query])
@@ -15,4 +15,15 @@ class Recommender:
             top_k
         )
 
-        return scores, indices
+        results = []
+
+        for score, index in zip(scores[0], indices[0]):
+            if index < len(chunks):
+                results.append({
+                    "score": float(score),
+                    "start": chunks[index]["start"],
+                    "end": chunks[index]["end"],
+                    "text": chunks[index]["text"]
+                })
+
+        return results
