@@ -5,70 +5,101 @@ from ml.vector_store.faiss_index import FAISSIndex
 from ml.retrieval.recommender import Recommender
 
 
-# YouTube video
-video_id = "_uQrJ0TkZlc"
+def build_video_index(video_ids):
 
-# Student query
-query = "What is Python used for?"
+    all_chunks = []
+    valid_video_ids = []
 
+    for video_id in video_ids:
 
-# 1. Get transcript
-segments = get_transcript(video_id)
+        print(f"\nProcessing video: {video_id}")
 
-if not segments:
-    print("No transcript found.")
-    exit()
+        segments = get_transcript(video_id)
 
-print("Transcript segments:", len(segments))
+        if not segments:
+            print("No transcript found.")
+            continue
 
+        chunks = create_timestamped_chunks(
+            segments,
+            chunk_size=3
+        )
 
-# 2. Create timestamped chunks
-chunks = create_timestamped_chunks(
-    segments,
-    chunk_size=3
-)
+        for chunk in chunks:
+            chunk["video_id"] = video_id
 
-print("Timestamped chunks:", len(chunks))
+        all_chunks.extend(chunks)
+        valid_video_ids.append(video_id)
 
+    if not all_chunks:
+        return None, None, None
 
-# 3. Create embeddings
-embedder = Embedder()
+    embedder = Embedder()
 
-texts = [chunk["text"] for chunk in chunks]
-embeddings = embedder.encode(texts)
+    texts = [
+        chunk["text"]
+        for chunk in all_chunks
+    ]
 
+    embeddings = embedder.encode(texts)
 
-# 4. Create FAISS index
-dimension = embeddings.shape[1]
+    dimension = embeddings.shape[1]
 
-faiss_index = FAISSIndex(dimension)
-faiss_index.add_embeddings(embeddings)
+    faiss_index = FAISSIndex(dimension)
+    faiss_index.add_embeddings(embeddings)
 
+    recommender = Recommender(
+        embedder,
+        faiss_index
+    )
 
-# 5. Create recommender
-recommender = Recommender(
-    embedder,
-    faiss_index
-)
-
-
-# 6. Search using student query
-results = recommender.recommend(
-    query,
-    chunks,
-    top_k=5
-)
+    return recommender, all_chunks, valid_video_ids
 
 
-# 7. Display results
-print("\nStudent Query:")
-print(query)
+def search_videos(recommender, chunks, query, top_k=5):
 
-print("\nTop Results:")
+    results = recommender.recommend(
+        query,
+        chunks,
+        top_k=top_k
+    )
 
-for i, result in enumerate(results, start=1):
-    print(f"\nResult {i}")
-    print("Score:", result["score"])
-    print("Start:", result["start"])
-    print("End:", result["end"])
-    print("Text:", result["text"])
+    return results
+
+
+if __name__ == "__main__":
+
+    video_ids = [
+        "_uQrJ0TkZlc"
+    ]
+
+    query = "What is Python used for?"
+
+    recommender, chunks, valid_video_ids = build_video_index(
+        video_ids
+    )
+
+    if recommender is None:
+        print("No videos could be processed.")
+        exit()
+
+    results = search_videos(
+        recommender,
+        chunks,
+        query,
+        top_k=5
+    )
+
+    print("\nStudent Query:")
+    print(query)
+
+    print("\nTop Results:")
+
+    for i, result in enumerate(results, start=1):
+
+        print(f"\nResult {i}")
+        print("Video ID:", result.get("video_id"))
+        print("Score:", result["score"])
+        print("Start:", result["start"])
+        print("End:", result["end"])
+        print("Text:", result["text"])

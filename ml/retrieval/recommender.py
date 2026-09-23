@@ -20,6 +20,7 @@ class Recommender:
         for score, index in zip(scores[0], indices[0]):
             if index < len(chunks):
                 results.append({
+                    "video_id": chunks[index]["video_id"],
                     "score": float(score),
                     "start": chunks[index]["start"],
                     "end": chunks[index]["end"],
